@@ -147,8 +147,8 @@ namespace CCleaner
                 "各类工具的运行/下载缓存（含运行时），可重建", true));
 
             // ---------------- 系统组件 ----------------
-            t.Add(T("COMP-01", "comp", "WinSxS 组件存储", @"C:\Windows\WinSxS", TargetMode.Dism, RiskLevel.Safe, true, true,
-                "DISM 组件清理通常释放 1-4 GB，耗时较长", true));
+            t.Add(T("COMP-01", "comp", "WinSxS 组件存储", @"C:\Windows\WinSxS", TargetMode.Dism, RiskLevel.Safe, true, false,
+                "DISM 组件清理通常只释放 1-4 GB，耗时 10-20 分钟，默认不勾选", true));
             t.Add(T("COMP-02", "comp", "系统还原点", "", TargetMode.Shadow, RiskLevel.Medium, true, true,
                 "删除除最新一个以外的还原点", true));
 

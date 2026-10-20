@@ -18,7 +18,7 @@ jobs:
 
       - name: Build release assets
         shell: pwsh
-        run: pwsh -NoProfile -ExecutionPolicy Bypass -File ./build-release.ps1 -Version 2.0.0
+        run: pwsh -NoProfile -ExecutionPolicy Bypass -File ./build-release.ps1 -Version 2.0.1
 
       - name: Run safety tests
         shell: pwsh
@@ -27,10 +27,10 @@ jobs:
       - name: Upload release assets
         uses: actions/upload-artifact@v4
         with:
-          name: c-drive-cleaner-2.0.0
+          name: c-drive-cleaner-2.0.1
           path: |
-            dist/c-drive-cleaner-2.0.0-setup.exe
-            dist/c-drive-cleaner-2.0.0-portable.zip
+            dist/c-drive-cleaner-2.0.1-setup.exe
+            dist/c-drive-cleaner-2.0.1-portable.zip
             dist/C盘清理助手.exe
             dist/SHA256SUMS.txt
           if-no-files-found: error

@@ -36,6 +36,13 @@ namespace CCleaner
         {
             return v.ToString("0.0") + "%";
         }
+
+        public static string Duration(TimeSpan t)
+        {
+            if (t.TotalHours >= 1)
+                return string.Format("{0}:{1:00}:{2:00}", (int)t.TotalHours, t.Minutes, t.Seconds);
+            return string.Format("{0}:{1:00}", (int)t.TotalMinutes, t.Seconds);
+        }
     }
 
     public static class RiskText

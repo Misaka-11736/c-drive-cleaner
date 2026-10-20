@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.0.1] - 2026-10-20
+
+### Changed
+
+- **DISM component cleanup (COMP-01) is now unchecked by default.** On a 25 GB component
+  store it can run for 14+ minutes while freeing only 1–4 GB. It is still available as a
+  manual option.
+- Cleanup now runs the **largest caches first** and defers DISM / restore points to the end,
+  so free space grows immediately instead of appearing stuck on WinSxS.
+- The status bar shows **elapsed time** during scan and cleanup.
+- The log records **per-item duration**, total duration, and the DISM exit code with its
+  runtime.
+- DISM is **aborted after 30 minutes** and the reason is written to the log.
+
 ## [2.0.0] - 2026-10-20
 
 First public release. A complete rewrite of a private PowerShell prototype as a native

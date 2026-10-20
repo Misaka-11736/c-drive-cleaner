@@ -12,7 +12,7 @@ namespace CCleaner
     public class MainForm : Form
     {
         public const string AppName = "C盘清理助手";
-        public const string AppVersion = "2.0";
+        public const string AppVersion = "2.0.1";
 
         public readonly string UserProfile;
         public readonly string LocalAppData;
@@ -45,6 +45,7 @@ namespace CCleaner
         private ScanResult _scan;
         private CancellationTokenSource _cts;
         private bool _busy;
+        private readonly Stopwatch _workWatch = new Stopwatch();
         private int _pageIndex;
         private int _startPage;
 
@@ -409,6 +410,7 @@ namespace CCleaner
             UpdateSelection(0, 0);
 
             _cts = new CancellationTokenSource();
+            _workWatch.Restart();
             SetBusy(true);
             _progress.Value = -1;
             SetStatus("正在扫描 C 盘，只读不写...");
@@ -417,8 +419,8 @@ namespace CCleaner
             Progress<ScanProgress> progress = new Progress<ScanProgress>(delegate(ScanProgress p)
             {
                 if (!_busy) return;
-                SetStatus(string.Format("扫描中  {0} 文件 / {1} 目录 / {2}",
-                    Fmt.Count(p.Files), Fmt.Count(p.Dirs), Fmt.Size(p.Bytes)));
+                SetStatus(string.Format("扫描中  {0} 文件 / {1} 目录 / {2} · 已用 {3}",
+                    Fmt.Count(p.Files), Fmt.Count(p.Dirs), Fmt.Size(p.Bytes), Fmt.Duration(_workWatch.Elapsed)));
             });
             CancellationToken token = _cts.Token;
 
@@ -530,6 +532,7 @@ namespace CCleaner
         private void RunClean(List<CleanTarget> items, bool dryRun)
         {
             _cts = new CancellationTokenSource();
+            _workWatch.Restart();
             SetBusy(true);
             _progress.Value = 0;
             SetStatus(dryRun ? "演练中（不会删除文件）..." : "正在清理...");
@@ -539,7 +542,8 @@ namespace CCleaner
             {
                 if (!_busy) return;
                 if (p.Total > 0) _progress.Value = (int)(p.Index * 100.0 / p.Total);
-                SetStatus(string.Format("清理中 {0}/{1}  {2}", p.Index, p.Total, p.Message));
+                SetStatus(string.Format("清理中 {0}/{1} · 已用 {2} · {3}",
+                    p.Index, p.Total, Fmt.Duration(_workWatch.Elapsed), p.Message));
             });
             CancellationToken token = _cts.Token;
 

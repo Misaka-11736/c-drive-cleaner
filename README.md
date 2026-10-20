@@ -54,8 +54,8 @@ Grab the latest files from [Releases](../../releases):
 
 | File | What it is |
 |------|------------|
-| `c-drive-cleaner-2.0.0-setup.exe` | **Installer** — per-user install (no admin needed), Start Menu entry, optional desktop shortcut, standard uninstaller in *Apps & features*. |
-| `c-drive-cleaner-2.0.0-portable.zip` | **Portable** — just the EXE, the manual and the license. Unzip anywhere and run. |
+| `c-drive-cleaner-2.0.1-setup.exe` | **Installer** — per-user install (no admin needed), Start Menu entry, optional desktop shortcut, standard uninstaller in *Apps & features*. |
+| `c-drive-cleaner-2.0.1-portable.zip` | **Portable** — just the EXE, the manual and the license. Unzip anywhere and run. |
 | `SHA256SUMS.txt` | Checksums for both files. |
 
 The installer is unsigned, so SmartScreen may show *"Windows protected your PC"* —
@@ -76,7 +76,7 @@ Output: `.\C盘清理助手.exe` (about 130 KB). You can also pass `-Out <path>`
 To reproduce the release assets (app + installer + portable ZIP + checksums):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 2.0.0
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 2.0.1
 ```
 
 ### Run
@@ -174,7 +174,8 @@ The program collects nothing and sends nothing. Reports and logs are written loc
 - The binary is **not code-signed**, so SmartScreen may warn on first run.
 - Hard links (WinSxS, DriverStore) are counted per path, so folder totals can exceed the
   real disk usage. The UI says so explicitly.
-- DISM component cleanup takes 5–15 minutes and prevents uninstalling old updates.
+- DISM component cleanup takes 10–20 minutes and prevents uninstalling old updates, so it is
+  **off by default**; enable it manually if you want the extra 1–4 GB.
 - No quarantine: deletion is permanent (use dry-run first).
 - Not affiliated with Piriform CCleaner or any other product.
 

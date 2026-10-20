@@ -44,14 +44,28 @@ namespace CCleaner
             log.Add("C盘清理助手 清理日志  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             log.Add("模式: " + (dryRun ? "演练（不删除）" : "永久删除"));
             log.Add("选中: " + items.Count + " 项");
+            log.Add("执行顺序: 体积从大到小，DISM / 还原点等慢操作最后");
             log.Add("");
+
+            // 先删体积大的缓存，把 DISM / 还原点这类慢操作排到最后，
+            // 让用户尽快看到空间释放，而不是卡在 WinSxS 上十几分钟。
+            List<CleanTarget> ordered = new List<CleanTarget>(items);
+            ordered.Sort(delegate(CleanTarget a, CleanTarget b)
+            {
+                bool slowA = a.Mode == TargetMode.Dism || a.Mode == TargetMode.Shadow;
+                bool slowB = b.Mode == TargetMode.Dism || b.Mode == TargetMode.Shadow;
+                if (slowA != slowB) return slowA ? 1 : -1;
+                return b.Bytes.CompareTo(a.Bytes);
+            });
+
+            Stopwatch totalSw = Stopwatch.StartNew();
 
             EnsureOutDir();
             string logPath = Path.Combine(_outDir, "C-Clean-Log-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".log");
             result.LogPath = logPath;
 
             int index = 0;
-            foreach (CleanTarget item in items)
+            foreach (CleanTarget item in ordered)
             {
                 if (ct.IsCancellationRequested)
                 {
@@ -61,7 +75,10 @@ namespace CCleaner
                 }
 
                 index++;
-                Report(progress, index, items.Count, item.Id, item.Label);
+                Stopwatch itemSw = Stopwatch.StartNew();
+                string reportMsg = item.Label;
+                if (item.Mode == TargetMode.Dism) reportMsg = item.Label + "（约 10-20 分钟，可取消）";
+                Report(progress, index, ordered.Count, item.Id, reportMsg);
 
                 bool itemFailed = false;
                 switch (item.Mode)
@@ -118,6 +135,7 @@ namespace CCleaner
                         break;
                 }
 
+                if (!dryRun) log.Add("    用时 " + Fmt.Duration(itemSw.Elapsed));
                 if (itemFailed) log.Add("    [!] 存在未能删除的条目（多为占用中）");
                 if (result.Canceled) break;
             }
@@ -127,6 +145,7 @@ namespace CCleaner
             log.Add("");
             log.Add(string.Format("可用空间: {0} -> {1}，实际释放 {2}", Fmt.Size(result.BeforeFree), Fmt.Size(result.AfterFree), Fmt.Size(result.Freed)));
             log.Add(string.Format("未删除条目: {0}", result.Errors));
+            log.Add(string.Format("总用时: {0}", Fmt.Duration(totalSw.Elapsed)));
 
             try
             {
@@ -356,8 +375,9 @@ namespace CCleaner
                 return false;
             }
 
-            log.Add("    执行 DISM 组件清理，可能需要 5-15 分钟...");
+            log.Add("    执行 DISM 组件清理，通常 10-20 分钟，最长等待 30 分钟...");
             StringBuilder sb = new StringBuilder();
+            Stopwatch dismSw = Stopwatch.StartNew();
             try
             {
                 ProcessStartInfo psi = new ProcessStartInfo(exe, "/Online /Cleanup-Image /StartComponentCleanup");
@@ -390,11 +410,22 @@ namespace CCleaner
                             try { p.Kill(); } catch { }
                             break;
                         }
+                        if (dismSw.Elapsed.TotalMinutes > 30)
+                        {
+                            try { p.Kill(); } catch { }
+                            log.Add("    DISM 超过 30 分钟，已中止该步骤（不影响其他项目）");
+                            return false;
+                        }
                         Thread.Sleep(200);
                     }
                     p.WaitForExit();
                     int code = p.ExitCode;
-                    log.Add("    DISM 退出码 " + code);
+                    log.Add("    DISM 退出码 " + code + "，用时 " + Fmt.Duration(dismSw.Elapsed));
+                    if (ct.IsCancellationRequested)
+                    {
+                        log.Add("    DISM 已被取消");
+                        return false;
+                    }
                     if (code != 0 && code != 3010)
                     {
                         log.Add("    DISM 输出: " + sb.ToString().Trim());

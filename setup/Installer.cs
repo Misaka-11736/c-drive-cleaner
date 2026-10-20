@@ -11,7 +11,7 @@ namespace CCleaner.Setup
     public static class Installer
     {
         public const string AppName = "C盘清理助手";
-        public const string Version = "2.0.0";
+        public const string Version = "2.0.1";
         public const string Publisher = "Misaka-11736";
         public const string RegKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\CDriveCleaner";
         private const string PayloadName = "CCleanerSetup.payload.exe";

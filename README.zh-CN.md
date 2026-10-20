@@ -50,8 +50,8 @@ C# WinForms 编写，用 Windows 自带的 .NET Framework 编译器构建，单�
 
 | 文件 | 说明 |
 |------|------|
-| `c-drive-cleaner-2.0.0-setup.exe` | **安装包**：装到当前用户目录，**安装不需要管理员权限**；带开始菜单、可选桌面快捷方式，以及「设置 → 应用」里的标准卸载项 |
-| `c-drive-cleaner-2.0.0-portable.zip` | **便携版**：解压即用，含程序、说明和许可证 |
+| `c-drive-cleaner-2.0.1-setup.exe` | **安装包**：装到当前用户目录，**安装不需要管理员权限**；带开始菜单、可选桌面快捷方式，以及「设置 → 应用」里的标准卸载项 |
+| `c-drive-cleaner-2.0.1-portable.zip` | **便携版**：解压即用，含程序、说明和许可证 |
 | `SHA256SUMS.txt` | 两个文件的 SHA256 校验和 |
 
 安装包未签名，首次运行可能出现 SmartScreen「已保护你的电脑」，点「**更多信息 → 仍要运行**」即可。
@@ -71,7 +71,7 @@ powershell -ExecutionPolicy Bypass -File .\build.ps1
 要一次生成全部发布文件（主程序 + 安装包 + 便携 ZIP + 校验和）：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 2.0.0
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 2.0.1
 ```
 
 ### 使用
@@ -154,7 +154,7 @@ CI 每次推送都会跑同一套测试。
 
 - 未做代码签名，首次运行可能触发 SmartScreen 提示。
 - 硬链接（WinSxS、DriverStore）按路径重复计数，目录体积可能高于实际占用，界面已注明。
-- DISM 组件清理耗时 5–15 分钟，且清理后无法卸载旧更新。
+- DISM 组件清理要 10–20 分钟，且清理后无法卸载旧更新，因此**默认不勾选**；想多释放 1–4 GB 再手动勾上。
 - 没有隔离区，删除即永久（请先用演练模式）。
 - 与 Piriform CCleaner 等产品无关。
 

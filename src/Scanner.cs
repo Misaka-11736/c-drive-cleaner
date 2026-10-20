@@ -97,7 +97,7 @@ namespace CCleaner
             {
                 if (t.Id == "COMP-01" && winsxs > 0)
                 {
-                    t.Note = "目录实测 " + Fmt.Size(winsxs) + "（含硬链接，实际占用更小）；DISM 清理通常释放 1-4 GB，耗时 5-15 分钟";
+                    t.Note = "目录实测 " + Fmt.Size(winsxs) + "（含硬链接，实际占用更小）；DISM 通常只释放 1-4 GB，耗时 10-20 分钟，默认不勾选";
                 }
             }
 
@@ -464,7 +464,7 @@ namespace CCleaner
 
             if (r.WinSxSBytes > 5L * 1024 * 1024 * 1024)
             {
-                s.Add(S("清理 WinSxS 组件存储", string.Format("WinSxS 目录实测 {0}（含硬链接，实际磁盘占用通常更小）。DISM 组件清理一般能释放 1-4 GB，耗时 5-15 分钟，清理后无法卸载旧更新。", Fmt.Size(r.WinSxSBytes)), Math.Min(r.WinSxSBytes, 4L * 1024 * 1024 * 1024)));
+                s.Add(S("清理 WinSxS 组件存储", string.Format("WinSxS 目录实测 {0}（含硬链接，实际磁盘占用通常更小）。DISM 一般只释放 1-4 GB，却要跑 10-20 分钟，因此默认不勾选；愿意等再在「可清理」里手动勾上 COMP-01。清理后无法卸载旧更新。", Fmt.Size(r.WinSxSBytes)), Math.Min(r.WinSxSBytes, 4L * 1024 * 1024 * 1024)));
             }
 
             CleanTarget nv = Find(_targets, "GAME-08");
