@@ -44,6 +44,7 @@ namespace CCleaner
         private UpdateBanner _banner;
         private UpdateInfo _updateInfo;
         private Label _settingsLink;
+        private Label _diskLink;
 
         private ScanResult _scan;
         private CancellationTokenSource _cts;
@@ -124,6 +125,50 @@ namespace CCleaner
         {
             _updateInfo = info;
             _banner.ShowUpdate(info.Version, VersionInfo.Version);
+        }
+
+        // ------------------------------------------------------------------ 磁盘扩展包
+        private string FindDiskPack()
+        {
+            string[] candidates = new string[]
+            {
+                Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "磁盘扩展包.exe"),
+                Path.Combine(LocalAppData, "C盘清理助手", "dlc", "磁盘扩展包.exe")
+            };
+            foreach (string p in candidates)
+            {
+                try { if (File.Exists(p)) return p; }
+                catch { }
+            }
+            return null;
+        }
+
+        private void OpenDiskPack()
+        {
+            string module = FindDiskPack();
+            if (module != null)
+            {
+                try
+                {
+                    Process.Start(module);
+                    return;
+                }
+                catch { }
+            }
+
+            string hint = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "磁盘扩展包.exe");
+            DialogResult r = MessageBox.Show(this,
+                "磁盘扩展包是可选模块，用来扫描 D/E 盘、U 盘和移动硬盘。\r\n\r\n" +
+                "它不随主程序安装。请从 Releases 下载 c-drive-cleaner-disks.zip，\r\n" +
+                "解压后把「磁盘扩展包.exe」放到程序目录：\r\n" + hint + "\r\n\r\n" +
+                "是否打开下载页面？",
+                "磁盘扩展包", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+            if (r == DialogResult.Yes)
+            {
+                try { Process.Start("https://github.com/Misaka-11736/c-drive-cleaner/releases/latest"); }
+                catch { }
+            }
         }
 
         public ScanResult Scan
@@ -276,6 +321,17 @@ namespace CCleaner
             };
             _sidebar.Controls.Add(_settingsLink);
 
+            _diskLink = new Label();
+            _diskLink.Text = "磁盘扩展包";
+            _diskLink.AutoSize = false;
+            _diskLink.BackColor = Color.Transparent;
+            _diskLink.ForeColor = Color.FromArgb(148, 163, 184);
+            _diskLink.Font = Theme.F(8.5f);
+            _diskLink.Cursor = Cursors.Hand;
+            _diskLink.TextAlign = ContentAlignment.MiddleLeft;
+            _diskLink.Click += delegate { OpenDiskPack(); };
+            _sidebar.Controls.Add(_diskLink);
+
             Resize += delegate { LayoutChrome(); };
             KeyDown += delegate(object s, KeyEventArgs e)
             {
@@ -323,6 +379,12 @@ namespace CCleaner
             {
                 _settingsLink.Location = new Point(Theme.S(22), _sidebar.Height - Theme.S(104));
                 _settingsLink.Size = new Size(Theme.S(120), Theme.S(24));
+            }
+
+            if (_diskLink != null)
+            {
+                _diskLink.Location = new Point(Theme.S(22), _sidebar.Height - Theme.S(130));
+                _diskLink.Size = new Size(Theme.S(120), Theme.S(24));
             }
 
             _pageTitle.Location = new Point(Theme.S(24), Theme.S(14));

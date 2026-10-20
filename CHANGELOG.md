@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.2.0] - 2026-10-21
+
+### Added
+
+- **Optional disk pack** (`c-drive-cleaner-<version>-disks.zip`), a separate small EXE that
+  scans other disks: internal data partitions (D:/E:), USB hard drives, USB sticks and SD
+  cards. It is not bundled with the main installer and never auto-downloads.
+  - **Quick scan**: directory sizes, per-volume recycle bin, Steam shader cache,
+    Steam unfinished downloads, download folders.
+  - **Deep scan**: additionally finds the largest files, duplicate files (report only) and
+    files larger than 1 GB not modified for 2 years.
+  - **Only safe items are deletable**: per-volume recycle bin, Steam `shadercache`,
+    `downloading` and `temp`. Games, downloads, media and documents are report-only.
+  - **Backup drives are detected and locked read-only** (`WindowsImageBackup`, `FileHistory`,
+    volume labels containing Backup/Passport/备份).
+  - Network drives are not listed; the module makes no network requests.
+  - Deleting requires typing `DELETE <letter>` (for example `DELETE D`).
+  - Every deletion is logged to `Documents\C盘清理助手\Disk-Clean-Log-*.log`.
+- Main app: sidebar entry **磁盘扩展包** which launches the module if present, or explains
+  where to download it.
+
 ## [2.1.1] - 2026-10-20
 
 ### Fixed

@@ -31,6 +31,7 @@ jobs:
           path: |
             dist/c-drive-cleaner-*-setup.exe
             dist/c-drive-cleaner-*-portable.zip
+            dist/c-drive-cleaner-*-disks.zip
             dist/C盘清理助手.exe
             dist/SHA256SUMS.txt
           if-no-files-found: error

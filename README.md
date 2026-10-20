@@ -58,7 +58,8 @@ Grab the latest files from [Releases](../../releases):
 |------|------------|
 | `c-drive-cleaner-<version>-setup.exe` | **Installer** — per-user install (no admin needed), Start Menu entry, optional desktop shortcut, standard uninstaller in *Apps & features*. |
 | `c-drive-cleaner-<version>-portable.zip` | **Portable** — just the EXE, the manual and the license. Unzip anywhere and run. |
-| `SHA256SUMS.txt` | Checksums for both files. |
+| `c-drive-cleaner-<version>-disks.zip` | **Disk pack (optional)** — separate tool for D:/E:, USB drives and SD cards. Not included in the installer. |
+| `SHA256SUMS.txt` | Checksums for all files. |
 
 The installer is unsigned, so SmartScreen may show *"Windows protected your PC"* —
 choose **More info → Run anyway**.
@@ -129,6 +130,24 @@ the header:
 - If `api.github.com` is blocked (some proxies/networks), it falls back to following the
   `github.com/.../releases/latest` redirect and reads the version from the final `/tag/...` URL.
 - Network failures are silent — the app stays offline-first and works exactly the same.
+
+## Disk pack (optional)
+
+The main app only analyses C:. The **disk pack** is a separate, optional download for other
+disks:
+
+- internal data partitions (D:/E:), USB hard drives, USB sticks, SD cards;
+- **quick scan** (sizes, recycle bin, Steam caches, downloads) or **deep scan**
+  (largest files, duplicates, old large files);
+- only safe items can be deleted — per-volume recycle bin, Steam `shadercache`,
+  `downloading`, `temp`; games, downloads, media and documents are report-only;
+- backup drives (`WindowsImageBackup`, `FileHistory`, labels containing Backup/Passport)
+  are detected and locked read-only; network drives are not listed;
+- deleting requires typing `DELETE D` (your drive letter);
+- it never downloads anything and makes no network requests.
+
+Download `c-drive-cleaner-<version>-disks.zip`, unzip `磁盘扩展包.exe` next to the main EXE
+(or into `%LOCALAPPDATA%\C盘清理助手\dlc\`) and click **磁盘扩展包** in the sidebar.
 
 ## Command line
 

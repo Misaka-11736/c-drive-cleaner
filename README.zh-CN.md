@@ -53,7 +53,8 @@ C# WinForms 编写，用 Windows 自带的 .NET Framework 编译器构建，单�
 |------|------|
 | `c-drive-cleaner-<version>-setup.exe` | **安装包**：装到当前用户目录，**安装不需要管理员权限**；带开始菜单、可选桌面快捷方式，以及「设置 → 应用」里的标准卸载项 |
 | `c-drive-cleaner-<version>-portable.zip` | **便携版**：解压即用，含程序、说明和许可证 |
-| `SHA256SUMS.txt` | 两个文件的 SHA256 校验和 |
+| `c-drive-cleaner-<version>-disks.zip` | **磁盘扩展包（可选）**：单独扫描 D/E 盘、U 盘、移动硬盘，不随安装包附带 |
+| `SHA256SUMS.txt` | 所有文件的 SHA256 校验和 |
 
 安装包未签名，首次运行可能出现 SmartScreen「已保护你的电脑」，点「**更多信息 → 仍要运行**」即可。
 
@@ -116,6 +117,23 @@ powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 2.0.1
 - 如果 `api.github.com` 被拦截，会自动改为跟随 `github.com/.../releases/latest` 的跳转，
   从最终 URL 的 `/tag/vX.Y.Z` 读取版本。
 - 网络失败时完全静默，不影响任何功能。
+
+## 磁盘扩展包（可选）
+
+主程序只分析 C 盘。**磁盘扩展包**是单独下载的可选工具，用来扫描其他磁盘：
+
+- 内置数据分区（D:/E:）、USB 移动硬盘、U 盘、SD 卡；
+- **快速扫描**（体积、回收站、Steam 缓存、下载目录）或**深度扫描**
+  （大文件、重复文件、超过 2 年未修改的大文件）；
+- 只有安全项能删——各盘回收站、Steam `shadercache` / `downloading` / `temp`，
+  游戏、下载、媒体、文档一律只报告；
+- 自动识别备份盘（`WindowsImageBackup`、`FileHistory`、卷标含 Backup/Passport/备份）
+  并锁定为只读；网络盘不列出；
+- 删除需输入 `DELETE D`（对应盘符），输错不执行；
+- 不下载任何东西，也没有任何网络请求。
+
+下载 `c-drive-cleaner-<版本>-disks.zip`，把 `磁盘扩展包.exe` 解压到主程序目录
+（或 `%LOCALAPPDATA%\C盘清理助手\dlc\`），点侧栏「磁盘扩展包」即可。
 
 ## 命令行参数
 

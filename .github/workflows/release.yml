@@ -50,4 +50,5 @@ jobs:
           files: |
             dist/c-drive-cleaner-${{ env.VERSION }}-setup.exe
             dist/c-drive-cleaner-${{ env.VERSION }}-portable.zip
+            dist/c-drive-cleaner-${{ env.VERSION }}-disks.zip
             dist/SHA256SUMS.txt
