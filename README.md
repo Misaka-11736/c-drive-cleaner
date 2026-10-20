@@ -35,7 +35,9 @@ Windows — one ~130 KB executable, no installer, no runtime to download, no tel
 - **Dry run** — rehearse the exact operation without deleting a byte.
 - **Full audit log** — every item and every file that could not be deleted is written to
   `Documents\C盘清理助手\C-Clean-Log-*.log`.
-- **Offline** — no network calls, no analytics, no auto-update.
+- **Minimal network** — at most one HTTPS request per day to GitHub Releases, only to check
+  for a newer version. No telemetry, no ads, no automatic download or install. Can be
+  disabled in settings or with `--no-update-check`.
 
 ## Requirements
 
@@ -112,6 +114,20 @@ The installer does **not** need administrator rights. Only the cleanup itself el
   traversed, when deleting.
 - Personal data directories are report-only by design; there is no switch to delete them.
 
+## Updates
+
+At most once every 24 hours the app asks `api.github.com` for the latest stable release
+(`releases/latest`). If the tag is newer than the running version, a banner appears under
+the header:
+
+> 发现新版本 2.2.0（当前 2.1.0）· 查看 · 忽略此版本
+
+- **查看** opens the release page in your browser; the app never downloads or executes an
+  installer by itself.
+- **忽略此版本** remembers that version and does not nag again for it.
+- The check can be turned off in **设置** (sidebar) or with `--no-update-check`.
+- Network failures are silent — the app stays offline-first and works exactly the same.
+
 ## Command line
 
 The GUI accepts a few arguments, mainly for automation and screenshots:
@@ -122,6 +138,7 @@ C盘清理助手.exe --plan="plan.json"         open a saved cleanup plan
 C盘清理助手.exe --plan="plan.json" --dry-run   rehearse the plan, delete nothing
 C盘清理助手.exe --page=3                   open a specific page (0–5)
 C盘清理助手.exe --no-elevate               do not request admin (read-only mode)
+C盘清理助手.exe --no-update-check          never contact GitHub for updates
 ```
 
 Plans are plain JSON (`schema: c-cleaner-plan/1`), produced by **导出报告 / Export**.
@@ -166,8 +183,16 @@ CI runs the same test on every push.
 
 ## Privacy
 
-The program collects nothing and sends nothing. Reports and logs are written locally to
-`Documents\C盘清理助手\` and contain only paths that exist on your machine.
+No telemetry, no analytics, no accounts. The only network access is the update check:
+
+- one HTTPS `GET` to `api.github.com/repos/Misaka-11736/c-drive-cleaner/releases/latest`,
+  at most once per 24 hours, carrying only a `User-Agent` and `Accept` header;
+- it can be disabled in **设置** or with `--no-update-check`;
+- the result (last check time, latest version) is stored locally in
+  `%LOCALAPPDATA%\C盘清理助手\update-state.json`.
+
+Reports and logs stay local in `Documents\C盘清理助手\` and contain only paths from your
+machine.
 
 ## Limitations
 

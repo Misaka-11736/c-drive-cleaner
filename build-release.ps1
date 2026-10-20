@@ -1,10 +1,16 @@
 ﻿param(
-    [string]$Version = "2.0.1"
+    [string]$Version = ""
 )
 $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $dist = Join-Path $root 'dist'
+
+if (-not $Version) {
+    $versionFile = Join-Path $root 'version.txt'
+    if (Test-Path $versionFile) { $Version = (Get-Content $versionFile -Raw -Encoding UTF8).Trim() }
+    if (-not $Version) { throw '缺少版本号：请提供 -Version 或 version.txt' }
+}
 
 if (Test-Path $dist) { Remove-Item $dist -Recurse -Force }
 New-Item -ItemType Directory -Path $dist -Force | Out-Null
@@ -13,8 +19,8 @@ $appExe = Join-Path $dist 'C盘清理助手.exe'
 $setupExe = Join-Path $dist ('c-drive-cleaner-' + $Version + '-setup.exe')
 $portableZip = Join-Path $dist ('c-drive-cleaner-' + $Version + '-portable.zip')
 
-Write-Host '1/4 编译主程序...' -ForegroundColor Cyan
-& (Join-Path $root 'build.ps1') -Out $appExe | Out-Null
+Write-Host ('1/4 编译主程序 v' + $Version + '...') -ForegroundColor Cyan
+& (Join-Path $root 'build.ps1') -Out $appExe -Version $Version | Out-Null
 
 Write-Host '2/4 编译安装程序...' -ForegroundColor Cyan
 & (Join-Path $root 'build-installer.ps1') -AppExe $appExe -Out $setupExe -Version $Version | Out-Null

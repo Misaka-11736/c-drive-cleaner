@@ -1,4 +1,4 @@
-# Builds the cleaner core plus the sandboxed deletion test and runs it.
+﻿# Builds the cleaner core plus the sandboxed deletion test and runs it.
 # Exits non-zero if the test fails, so CI can gate on it.
 
 $ErrorActionPreference = 'Stop'

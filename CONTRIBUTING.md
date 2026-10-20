@@ -15,12 +15,30 @@ Visual Studio.
 To build everything that goes into a release:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 2.0.0
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1
 ```
 
 This writes the app, installer, portable ZIP and `SHA256SUMS.txt` into `dist/`.
-When bumping the version, update **both** `-Version` and the `Version` constant in
-`setup/Installer.cs` (it is shown in the installer window and in *Apps & features*).
+The version comes from `version.txt`; `build-release.ps1 -Version x.y.z` overrides it and
+generates `src/generated/VersionInfo.g.cs` for the app and the installer.
+
+## Releasing
+
+The whole release is automated by `.github/workflows/release.yml`:
+
+1. Update `version.txt` and add a `## [x.y.z]` section to `CHANGELOG.md`.
+2. Commit and push to `main`.
+3. Tag and push the tag:
+
+   ```powershell
+   git tag v2.1.0
+   git push origin main --tags
+   ```
+
+4. The workflow builds the app + installer + portable ZIP, runs `tools/test.ps1`, extracts
+   the matching CHANGELOG section and publishes a GitHub Release with the three assets.
+
+If the tests fail, no release is created.
 
 ## Test
 
@@ -41,6 +59,10 @@ path validation and dry-run behaviour. CI runs it on every push.
 - No external dependencies. Everything must build with the framework compiler.
 - 4 spaces, Allman braces, one type per file where practical.
 - Custom-drawn UI: honour `Theme.S()` for pixel sizes so 125%/150% scaling keeps working.
+- **PowerShell scripts containing Chinese must be saved as UTF-8 *with BOM***. Windows
+  PowerShell 5.1 reads BOM-less files as ANSI and merges lines around Chinese comments,
+  which breaks the build in confusing ways. `.gitattributes`/CI do not fix this — save with
+  BOM in your editor.
 
 ## Safety rules (non-negotiable)
 

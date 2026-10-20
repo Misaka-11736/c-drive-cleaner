@@ -12,7 +12,7 @@ namespace CCleaner
     public class MainForm : Form
     {
         public const string AppName = "C盘清理助手";
-        public const string AppVersion = "2.0.1";
+        public const string AppVersion = VersionInfo.Version;
 
         public readonly string UserProfile;
         public readonly string LocalAppData;
@@ -41,6 +41,9 @@ namespace CCleaner
         private RankPage _rank;
         private SuggestionPage _suggest;
         private LogPage _log;
+        private UpdateBanner _banner;
+        private UpdateInfo _updateInfo;
+        private Label _settingsLink;
 
         private ScanResult _scan;
         private CancellationTokenSource _cts;
@@ -59,7 +62,7 @@ namespace CCleaner
             "最近一次清理的详细记录"
         };
 
-        public MainForm(string userProfile, string local, string roaming, bool autoScan, int startPage, string openPlan, bool autoDryRun)
+        public MainForm(string userProfile, string local, string roaming, bool autoScan, int startPage, string openPlan, bool autoDryRun, bool noUpdateCheck)
         {
             UserProfile = userProfile;
             LocalAppData = local;
@@ -95,6 +98,32 @@ namespace CCleaner
                     if (autoDryRun) DryRunPlan();
                 };
             }
+
+            if (!noUpdateCheck)
+            {
+                Shown += delegate { StartUpdateCheck(); };
+            }
+        }
+
+        // ------------------------------------------------------------------ 更新检查
+        private void StartUpdateCheck()
+        {
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                UpdateInfo info = UpdateChecker.Check(LocalAppData, false);
+                if (info == null) return;
+                try
+                {
+                    BeginInvoke(new Action(delegate { ShowUpdateBanner(info); }));
+                }
+                catch { }
+            });
+        }
+
+        private void ShowUpdateBanner(UpdateInfo info)
+        {
+            _updateInfo = info;
+            _banner.ShowUpdate(info.Version, VersionInfo.Version);
         }
 
         public ScanResult Scan
@@ -217,6 +246,36 @@ namespace CCleaner
             _pages = new PageBase[] { _overview, _clean, _stats, _rank, _suggest, _log };
             foreach (PageBase p in _pages) _content.Controls.Add(p);
 
+            _banner = new UpdateBanner();
+            _banner.ViewClicked += delegate
+            {
+                if (_updateInfo != null && _updateInfo.Url.Length > 0)
+                {
+                    try { Process.Start(_updateInfo.Url); } catch { }
+                }
+                _banner.Visible = false;
+            };
+            _banner.Ignored += delegate
+            {
+                if (_updateInfo != null) UpdateChecker.Ignore(LocalAppData, _updateInfo.Version);
+            };
+            _content.Controls.Add(_banner);
+
+            _settingsLink = new Label();
+            _settingsLink.Text = "设置";
+            _settingsLink.AutoSize = false;
+            _settingsLink.BackColor = Color.Transparent;
+            _settingsLink.ForeColor = Color.FromArgb(148, 163, 184);
+            _settingsLink.Font = Theme.F(8.5f);
+            _settingsLink.Cursor = Cursors.Hand;
+            _settingsLink.TextAlign = ContentAlignment.MiddleLeft;
+            _settingsLink.Click += delegate
+            {
+                using (SettingsForm f = new SettingsForm(LocalAppData, VersionInfo.Version))
+                    f.ShowDialog(this);
+            };
+            _sidebar.Controls.Add(_settingsLink);
+
             Resize += delegate { LayoutChrome(); };
             KeyDown += delegate(object s, KeyEventArgs e)
             {
@@ -258,6 +317,12 @@ namespace CCleaner
                 _nav[i].Location = new Point(0, logoBottom + i * Theme.S(46));
                 _nav[i].Width = _sidebar.Width;
                 _nav[i].Height = Theme.S(46);
+            }
+
+            if (_settingsLink != null)
+            {
+                _settingsLink.Location = new Point(Theme.S(22), _sidebar.Height - Theme.S(104));
+                _settingsLink.Size = new Size(Theme.S(120), Theme.S(24));
             }
 
             _pageTitle.Location = new Point(Theme.S(24), Theme.S(14));

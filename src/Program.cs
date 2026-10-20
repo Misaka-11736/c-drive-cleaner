@@ -18,6 +18,7 @@ namespace CCleaner
             bool noElevate = false;
             bool autoScan = false;
             bool autoDryRun = false;
+            bool noUpdateCheck = false;
             int startPage = 0;
             string openPlan = "";
 
@@ -29,6 +30,7 @@ namespace CCleaner
                 else if (a == "--no-elevate") noElevate = true;
                 else if (a == "--scan") autoScan = true;
                 else if (a == "--dry-run") autoDryRun = true;
+                else if (a == "--no-update-check") noUpdateCheck = true;
                 else if (a.StartsWith("--page=", StringComparison.OrdinalIgnoreCase)) int.TryParse(a.Substring(7), out startPage);
                 else if (a.StartsWith("--plan=", StringComparison.OrdinalIgnoreCase)) openPlan = Unquote(a.Substring(7));
             }
@@ -68,7 +70,7 @@ namespace CCleaner
                         "C盘清理助手", MessageBoxButtons.OK, MessageBoxIcon.Error);
             };
 
-            Application.Run(new MainForm(up, la, ra, autoScan, startPage, openPlan, autoDryRun));
+            Application.Run(new MainForm(up, la, ra, autoScan, startPage, openPlan, autoDryRun, noUpdateCheck));
         }
 
         private static string Unquote(string s)

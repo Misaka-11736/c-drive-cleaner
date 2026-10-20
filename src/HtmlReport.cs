@@ -253,7 +253,7 @@ namespace CCleaner
 
         private static string Footer(ScanResult r)
         {
-            return Enc("C盘清理助手 v2.0.1 · " + r.GeneratedAt.ToString("yyyy-MM-dd HH:mm:ss") + " · 清理前请确认清单");
+            return Enc("C盘清理助手 v" + VersionInfo.Version + " · " + r.GeneratedAt.ToString("yyyy-MM-dd HH:mm:ss") + " · 清理前请确认清单");
         }
     }
 }

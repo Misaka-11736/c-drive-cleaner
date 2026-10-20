@@ -6,6 +6,9 @@
 *.pdb
 *.obj
 
+# 构建时生成的版本文件
+/src/generated/
+
 # 本地产物
 /out/
 *.log

@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.1.0] - 2026-10-20
+
+### Added
+
+- **Update check.** At most once every 24 hours the app asks the GitHub Releases API for the
+  latest stable version and shows a dismissible banner:
+  `发现新版本 x.y.z（当前 a.b.c）· 查看 · 忽略此版本`.
+  - *查看* opens the release page in the browser — the app **never downloads or executes**
+    an update by itself.
+  - *忽略此版本* remembers the version and stops nagging for it.
+- **Settings dialog** (sidebar → 设置): toggle the automatic check, run a manual
+  *立即检查更新*, see the current version.
+- `--no-update-check` command-line switch.
+- Version number is now derived from `version.txt` / the git tag at build time
+  (`src/generated/VersionInfo.g.cs`); the two hard-coded version constants are gone.
+
+### Changed
+
+- Release publishing is fully automated: pushing a `v*` tag makes GitHub Actions build the
+  app, installer and portable ZIP, run the safety tests and publish a GitHub Release.
+
+### Notes
+
+- This is the first network behaviour in the project: one HTTPS `GET` per day to
+  `api.github.com`, no telemetry, fully optional.
+
 ## [2.0.1] - 2026-10-20
 
 ### Changed

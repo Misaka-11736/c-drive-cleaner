@@ -36,4 +36,17 @@ The binary is not code-signed. To be sure it matches this source:
 2. Or use the artifact produced by the `build` GitHub Actions workflow, which compiles the
    exact commit and runs `tools/test.ps1`.
 
-The application makes no network requests at runtime.
+## Network access
+
+The application performs exactly one kind of network request: an update check.
+
+- `GET https://api.github.com/repos/Misaka-11736/c-drive-cleaner/releases/latest`
+- at most once per 24 hours, only when the update check is enabled;
+- headers: `User-Agent`, `Accept`; no identifiers, no telemetry, no request body;
+- disabled by `--no-update-check` or the **设置** toggle;
+- the app **never downloads or executes** update binaries; it only opens the release page
+  in the default browser when the user clicks **查看**.
+
+Because the binary is unsigned, an attacker who controls the GitHub repository could push a
+malicious release. That is why the updater is notification-only: users download manually and
+can inspect the release before running it.
