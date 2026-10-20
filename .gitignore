@@ -1,0 +1,19 @@
+# 构建产物
+/dist/
+/bin/
+/obj/
+*.exe
+*.pdb
+*.obj
+
+# 本地产物
+/out/
+*.log
+*.user
+.vs/
+.idea/
+.vscode/
+*.suo
+
+# 截图临时文件
+/docs/screenshots/*.tmp

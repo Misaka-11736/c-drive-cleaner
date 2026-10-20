@@ -1,0 +1,65 @@
+name: Bug report
+description: Something went wrong while scanning or cleaning
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. **Do not** paste full logs if they contain personal paths you
+        do not want public — redact the user name, keep the item IDs.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Window title, e.g. "C盘清理助手 v2.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Windows version
+      placeholder: Windows 11 23H2 (22631.xxxx) / Windows 10 22H2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: elevated
+    attributes:
+      label: Was the app running as administrator?
+      options:
+        - "Yes (UAC accepted)"
+        - "No (--no-elevate)"
+        - "Not sure"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Scanned
+        2. Selected SYS-02 and GAME-08
+        3. Typed DELETE
+        4. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs. actual
+    validations:
+      required: true
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Relevant log lines
+      description: From Documents\C盘清理助手\C-Clean-Log-*.log (redact user names)
+      render: text
+    validations:
+      required: false

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C 盘清理报告</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef2f7;color:#1e293b;font:14px/1.65 "Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 60px}
+.hero{background:linear-gradient(135deg,#0f2a5c,#1d4ed8 62%,#3b82f6);color:#fff;border-radius:0 0 18px 18px;padding:30px 34px 34px;margin:0 -20px 22px;box-shadow:0 10px 30px rgba(30,64,175,.25)}
+.hero h1{margin:0;font-size:25px;font-weight:600;letter-spacing:.3px}
+.hero .sub{margin-top:7px;color:#c7d2fe;font-size:13px}
+.card{background:#fff;border-radius:12px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.05)}
+.card h2{margin:0 0 4px;font-size:17px;font-weight:600}
+.card .lead{color:#64748b;font-size:13px;margin-bottom:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi{background:#fff;border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px rgba(15,23,42,.06)}
+.kpi .k{color:#64748b;font-size:12px}
+.kpi .v{font-size:24px;font-weight:700;margin-top:2px;color:#0f172a}
+.kpi .v.blue{color:#1d4ed8}.kpi .v.green{color:#0f7b45}.kpi .v.gray{color:#475569}
+.diskrow{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:#475569}
+.diskbar{height:16px;background:#e2e8f0;border-radius:8px;overflow:hidden;margin:10px 0 8px}
+.diskbar i{display:block;height:100%;background:linear-gradient(90deg,#1d4ed8,#60a5fa)}
+.diskbar i.hot{background:linear-gradient(90deg,#b42318,#f97066)}
+.legend{display:flex;gap:18px;font-size:12px;color:#64748b}
+.legend b{color:#0f172a}
+.cathead{display:flex;align-items:center;gap:10px;margin:18px 0 10px;flex-wrap:wrap}
+.cathead h2{margin:0;font-size:15px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.csum{background:#eef2ff;color:#3730a3;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600}
+.cdesc{color:#94a3b8;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:#64748b;font-weight:600;font-size:12px;text-align:left;border-bottom:2px solid #e2e8f0;padding:8px 10px;white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid #eef2f7;vertical-align:top}
+tr:hover td{background:#f8fafc}
+td.num,th.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+td.chk,th.chk{width:30px;padding-right:0}
+td.id{color:#94a3b8;font-size:12px;white-space:nowrap}
+td.nm{font-weight:500;white-space:nowrap}
+td.pth{color:#64748b;font-size:12px;word-break:break-all;max-width:360px}
+td.note{color:#94a3b8;font-size:12px;max-width:260px}
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap}
+.t1{background:#e8f7ee;color:#0f7b45}.t2{background:#eef2ff;color:#3b4fd8}.t3{background:#fff4e5;color:#a35b00}.t4{background:#fdecec;color:#b42318}
+.more{color:#94a3b8;font-size:11px}
+.warn{color:#b45309;font-size:12px}
+.muted{color:#cbd5e1}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+button{cursor:pointer;border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:8px;padding:6px 14px;font-size:13px}
+button:hover{background:#f1f5f9}
+button.primary{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+button.primary:hover{background:#1e40af}
+.cmdbox textarea{width:100%;height:70px;font:12px/1.5 Consolas,monospace;border:1px solid #cbd5e1;border-radius:8px;padding:10px;resize:vertical;background:#f8fafc;color:#334155;word-break:break-all}
+.hint{color:#64748b;font-size:12px}
+.bar{width:130px;background:#eef2f7;border-radius:4px;height:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.sugg{border-left:3px solid #f59e0b;padding:2px 0 2px 14px;margin:16px 0}
+.sugg h3{margin:0 0 3px;font-size:14px;color:#92400e}
+.sugg p{margin:0;color:#475569;font-size:13px}
+.note-list{margin:0;padding-left:18px;color:#64748b;font-size:13px}
+.note-list li{margin:5px 0}
+footer{color:#94a3b8;font-size:12px;text-align:center;margin-top:28px}
+@media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}td.note,th.note{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>C 盘空间分析与清理清单</h1>
+    <div class="sub">{{META}}</div>
+  </div>
+
+  <div class="card">
+    <h2>C: 磁盘使用</h2>
+    {{DISK}}
+  </div>
+
+  <div class="kpis">{{KPIS}}</div>
+
+  <div class="card">
+    <h2>可清理项目</h2>
+    <div class="lead">默认只勾选「推荐」项。取消勾选即可保留；下方编号与「C盘清理助手」中的项目一一对应。</div>
+    <div class="toolbar">
+      <button id="all">全选</button>
+      <button id="none">全不选</button>
+      <span style="color:#64748b;font-size:13px">已选 <b id="sel-count">0</b> 项，合计 <b id="sel-total">0 B</b></span>
+    </div>
+    {{CLEAN_SECTIONS}}
+  </div>
+
+  <div class="card cmdbox">
+    <h2>执行清理</h2>
+    <div class="lead">勾选后这里会列出编号。打开「C盘清理助手」，按同样范围勾选并点「开始清理」，永久删除前需要输入 DELETE 确认。</div>
+    <textarea id="ids" readonly placeholder="勾选项目后，这里显示编号"></textarea>
+    <div class="toolbar" style="margin-top:10px">
+      <button class="primary" id="copy">复制编号</button>
+      <span class="hint">编号格式与清理计划 JSON 完全一致。</span>
+    </div>
+  </div>
+
+  {{REPORT_ONLY}}
+  {{TOP_DIRS}}
+  {{TOP_FILES}}
+  {{SUGGESTIONS}}
+  {{NOTES}}
+
+  <footer>{{FOOTER}}</footer>
+</div>
+<script>
+(function(){
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox][data-id]'));
+  var totalEl = document.getElementById('sel-total');
+  var countEl = document.getElementById('sel-count');
+  var idsEl = document.getElementById('ids');
+  function fmt(b){ b = Number(b)||0; var u=['B','KB','MB','GB','TB'], i=0; while(b>=1024 && i<u.length-1){ b/=1024; i++; } return (i<2 ? Math.round(b) : b.toFixed(2)) + ' ' + u[i]; }
+  function refresh(){
+    var sum=0, n=0, ids=[];
+    boxes.forEach(function(b){ if(b.checked){ sum += Number(b.getAttribute('data-bytes'))||0; n++; ids.push(b.getAttribute('data-id')); } });
+    if(totalEl) totalEl.textContent = fmt(sum);
+    if(countEl) countEl.textContent = n;
+    if(idsEl) idsEl.value = ids.join(',');
+  }
+  boxes.forEach(function(b){ b.addEventListener('change', refresh); });
+  var all = document.getElementById('all'), none = document.getElementById('none'), copy = document.getElementById('copy');
+  if(all) all.addEventListener('click', function(){ boxes.forEach(function(b){ b.checked = true; }); refresh(); });
+  if(none) none.addEventListener('click', function(){ boxes.forEach(function(b){ b.checked = false; }); refresh(); });
+  if(copy) copy.addEventListener('click', function(){
+    idsEl.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch(e) { ok = false; }
+    if(!ok && navigator.clipboard) { navigator.clipboard.writeText(idsEl.value); }
+    copy.textContent = '已复制';
+    var self = copy;
+    setTimeout(function(){ self.textContent = '复制编号'; }, 1500);
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>
