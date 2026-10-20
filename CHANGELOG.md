@@ -8,6 +8,10 @@ WinForms application.
 ### Added
 
 - Portable single-file GUI (`C盘清理助手.exe`, ~130 KB) built with the in-box C# compiler.
+- Per-user installer (`c-drive-cleaner-2.0.0-setup.exe`): installs to
+  `%LOCALAPPDATA%\Programs\C盘清理助手`, adds Start Menu and optional desktop shortcuts, and
+  registers a standard uninstaller in *Apps & features*. Installing does not require admin.
+- Portable ZIP and `SHA256SUMS.txt` for checksum verification.
 - Full C: drive scan: per-folder aggregation (depth 1–4), largest-file ranking, hard-link
   aware totals, denied-path reporting.
 - 76 cleanup targets across six categories, with risk levels, recommendations and notes.

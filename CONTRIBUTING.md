@@ -12,6 +12,16 @@ powershell -ExecutionPolicy Bypass -File .\build.ps1
 Requires Windows with .NET Framework 4.8 (the in-box `csc.exe`). No SDK, no NuGet, no
 Visual Studio.
 
+To build everything that goes into a release:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 2.0.0
+```
+
+This writes the app, installer, portable ZIP and `SHA256SUMS.txt` into `dist/`.
+When bumping the version, update **both** `-Version` and the `Version` constant in
+`setup/Installer.cs` (it is shown in the installer window and in *Apps & features*).
+
 ## Test
 
 ```powershell

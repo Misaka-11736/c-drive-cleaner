@@ -44,6 +44,18 @@ C# WinForms 编写，用 Windows 自带的 .NET Framework 编译器构建，单�
 
 ## 快速开始
 
+### 下载
+
+在 [Releases](../../releases) 页面下载：
+
+| 文件 | 说明 |
+|------|------|
+| `c-drive-cleaner-2.0.0-setup.exe` | **安装包**：装到当前用户目录，**安装不需要管理员权限**；带开始菜单、可选桌面快捷方式，以及「设置 → 应用」里的标准卸载项 |
+| `c-drive-cleaner-2.0.0-portable.zip` | **便携版**：解压即用，含程序、说明和许可证 |
+| `SHA256SUMS.txt` | 两个文件的 SHA256 校验和 |
+
+安装包未签名，首次运行可能出现 SmartScreen「已保护你的电脑」，点「**更多信息 → 仍要运行**」即可。
+
 ### 从源码构建
 
 不需要 Visual Studio，也不需要 .NET SDK —— 直接用系统自带的 `csc.exe`：
@@ -56,13 +68,21 @@ powershell -ExecutionPolicy Bypass -File .\build.ps1
 
 产物为 `.\C盘清理助手.exe`（约 130 KB），可用 `-Out <路径>` 指定输出位置。
 
+要一次生成全部发布文件（主程序 + 安装包 + 便携 ZIP + 校验和）：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 2.0.0
+```
+
 ### 使用
 
-1. 双击 EXE，在 UAC 弹窗点「是」。
+1. 双击安装后的快捷方式（或便携版 EXE），在 UAC 弹窗点「是」。
 2. 点「**重新扫描**」（或按 F5），扫描只读，SSD 上约 90 秒。
 3. 到「**可清理**」页核对勾选项（默认只勾推荐项），点「**开始清理**」。
 4. 确认框里输入 `DELETE` 才会解锁按钮；也可以勾「**仅演练**」先看一遍。
 5. 完成后自动跳到「**日志**」页，显示释放空间与未能删除的条目。
+
+安装过程本身不需要管理员权限，只有执行清理时才会提权。
 
 ## 工作原理
 
@@ -100,6 +120,9 @@ C盘清理助手.exe --no-elevate                 不请求管理员（只读模
 
 ```text
 build.ps1                  一条命令构建（csc，无需 SDK）
+build-installer.ps1        编译安装程序（内嵌主程序）
+build-release.ps1          主程序 + 安装包 + 便携 ZIP + 校验和
+setup/                     安装程序源码（快捷方式、卸载项）
 app.manifest               DPI 感知、asInvoker（程序自行提权）
 app.ico                    由 tools/make-icon.ps1 生成
 src/                       全部 C# 源码与报告模板

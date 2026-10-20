@@ -16,17 +16,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build executable
+      - name: Build release assets
         shell: pwsh
-        run: pwsh -NoProfile -ExecutionPolicy Bypass -File ./build.ps1 -Out "${{ github.workspace }}/dist/c-drive-cleaner.exe"
+        run: pwsh -NoProfile -ExecutionPolicy Bypass -File ./build-release.ps1 -Version 2.0.0
 
       - name: Run safety tests
         shell: pwsh
         run: pwsh -NoProfile -ExecutionPolicy Bypass -File ./tools/test.ps1
 
-      - name: Upload artifact
+      - name: Upload release assets
         uses: actions/upload-artifact@v4
         with:
-          name: c-drive-cleaner
-          path: dist/c-drive-cleaner.exe
+          name: c-drive-cleaner-2.0.0
+          path: |
+            dist/c-drive-cleaner-2.0.0-setup.exe
+            dist/c-drive-cleaner-2.0.0-portable.zip
+            dist/C盘清理助手.exe
+            dist/SHA256SUMS.txt
           if-no-files-found: error
