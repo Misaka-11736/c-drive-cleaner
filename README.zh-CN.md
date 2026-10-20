@@ -51,8 +51,8 @@ C# WinForms 编写，用 Windows 自带的 .NET Framework 编译器构建，单�
 
 | 文件 | 说明 |
 |------|------|
-| `c-drive-cleaner-2.0.1-setup.exe` | **安装包**：装到当前用户目录，**安装不需要管理员权限**；带开始菜单、可选桌面快捷方式，以及「设置 → 应用」里的标准卸载项 |
-| `c-drive-cleaner-2.0.1-portable.zip` | **便携版**：解压即用，含程序、说明和许可证 |
+| `c-drive-cleaner-<version>-setup.exe` | **安装包**：装到当前用户目录，**安装不需要管理员权限**；带开始菜单、可选桌面快捷方式，以及「设置 → 应用」里的标准卸载项 |
+| `c-drive-cleaner-<version>-portable.zip` | **便携版**：解压即用，含程序、说明和许可证 |
 | `SHA256SUMS.txt` | 两个文件的 SHA256 校验和 |
 
 安装包未签名，首次运行可能出现 SmartScreen「已保护你的电脑」，点「**更多信息 → 仍要运行**」即可。

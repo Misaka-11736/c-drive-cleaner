@@ -56,8 +56,8 @@ Grab the latest files from [Releases](../../releases):
 
 | File | What it is |
 |------|------------|
-| `c-drive-cleaner-2.0.1-setup.exe` | **Installer** — per-user install (no admin needed), Start Menu entry, optional desktop shortcut, standard uninstaller in *Apps & features*. |
-| `c-drive-cleaner-2.0.1-portable.zip` | **Portable** — just the EXE, the manual and the license. Unzip anywhere and run. |
+| `c-drive-cleaner-<version>-setup.exe` | **Installer** — per-user install (no admin needed), Start Menu entry, optional desktop shortcut, standard uninstaller in *Apps & features*. |
+| `c-drive-cleaner-<version>-portable.zip` | **Portable** — just the EXE, the manual and the license. Unzip anywhere and run. |
 | `SHA256SUMS.txt` | Checksums for both files. |
 
 The installer is unsigned, so SmartScreen may show *"Windows protected your PC"* —
