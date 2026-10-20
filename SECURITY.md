@@ -40,7 +40,9 @@ The binary is not code-signed. To be sure it matches this source:
 
 The application performs exactly one kind of network request: an update check.
 
-- `GET https://api.github.com/repos/Misaka-11736/c-drive-cleaner/releases/latest`
+- `GET https://api.github.com/repos/Misaka-11736/c-drive-cleaner/releases/latest`;
+  if that host is blocked, a `GET https://github.com/Misaka-11736/c-drive-cleaner/releases/latest`
+  is made instead and the version is read from the redirect URL
 - at most once per 24 hours, only when the update check is enabled;
 - headers: `User-Agent`, `Accept`; no identifiers, no telemetry, no request body;
 - disabled by `--no-update-check` or the **设置** toggle;

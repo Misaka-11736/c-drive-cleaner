@@ -134,6 +134,52 @@ namespace CCleaner
 
         public static UpdateInfo Fetch()
         {
+            UpdateInfo info = FetchFromApi();
+            if (info != null) return info;
+            return FetchFromReleasePage();
+        }
+
+        /// <summary>
+        /// 部分网络（企业代理/地区限制）会拦截 api.github.com，但 github.com 可访问。
+        /// 此时跟随 releases/latest 的 302 跳转，从最终 URL 的 /tag/vX.Y.Z 取版本。
+        /// </summary>
+        public static UpdateInfo FetchFromReleasePage()
+        {
+            try
+            {
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(
+                    "https://github.com/Misaka-11736/c-drive-cleaner/releases/latest");
+                req.UserAgent = "C-Drive-Cleaner/" + VersionInfo.Version;
+                req.Timeout = 8000;
+                req.ReadWriteTimeout = 8000;
+                req.AllowAutoRedirect = true;
+                req.Proxy = WebRequest.DefaultWebProxy;
+
+                using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
+                {
+                    string uri = resp.ResponseUri == null ? "" : resp.ResponseUri.ToString();
+                    int idx = uri.LastIndexOf("/tag/", StringComparison.OrdinalIgnoreCase);
+                    if (idx < 0) return null;
+
+                    string tag = uri.Substring(idx + 5).Trim().TrimStart('v', 'V');
+                    if (tag.Length == 0) return null;
+
+                    UpdateInfo info = new UpdateInfo();
+                    info.Version = tag;
+                    info.Url = uri;
+                    return info;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static UpdateInfo FetchFromApi()
+        {
             try
             {
                 ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;

@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.1] - 2026-10-20
+
+### Fixed
+
+- Update check now falls back to following
+  `https://github.com/Misaka-11736/c-drive-cleaner/releases/latest` when
+  `api.github.com` is blocked (corporate proxies, some networks). The final redirect URL
+  carries `/tag/vX.Y.Z`, which is enough to detect and link the new version.
+
 ## [2.1.0] - 2026-10-20
 
 ### Added

@@ -113,6 +113,8 @@ powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 2.0.1
 - **查看**：用浏览器打开 Release 页面，程序**不会**自己下载或运行安装包。
 - **忽略此版本**：记住这个版本，不再反复提示。
 - 可在侧栏「设置」里关闭自动检查，或启动时加 `--no-update-check`。
+- 如果 `api.github.com` 被拦截，会自动改为跟随 `github.com/.../releases/latest` 的跳转，
+  从最终 URL 的 `/tag/vX.Y.Z` 读取版本。
 - 网络失败时完全静默，不影响任何功能。
 
 ## 命令行参数
@@ -165,7 +167,7 @@ CI 每次推送都会跑同一套测试。
 
 - 每 24 小时最多一次 HTTPS `GET` 到
   `api.github.com/repos/Misaka-11736/c-drive-cleaner/releases/latest`，
-  只带 `User-Agent` 与 `Accept` 头；
+  只带 `User-Agent` 与 `Accept` 头；API 被拦截时改用 `github.com/.../releases/latest` 跳转；
 - 可在「设置」关闭，或启动加 `--no-update-check`；
 - 检查结果（上次时间、最新版本）只存在本机
   `%LOCALAPPDATA%\C盘清理助手\update-state.json`。

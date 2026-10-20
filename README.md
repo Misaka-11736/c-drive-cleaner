@@ -126,6 +126,8 @@ the header:
   installer by itself.
 - **忽略此版本** remembers that version and does not nag again for it.
 - The check can be turned off in **设置** (sidebar) or with `--no-update-check`.
+- If `api.github.com` is blocked (some proxies/networks), it falls back to following the
+  `github.com/.../releases/latest` redirect and reads the version from the final `/tag/...` URL.
 - Network failures are silent — the app stays offline-first and works exactly the same.
 
 ## Command line
@@ -185,7 +187,8 @@ CI runs the same test on every push.
 
 No telemetry, no analytics, no accounts. The only network access is the update check:
 
-- one HTTPS `GET` to `api.github.com/repos/Misaka-11736/c-drive-cleaner/releases/latest`,
+- one HTTPS `GET` to `api.github.com/repos/Misaka-11736/c-drive-cleaner/releases/latest`
+  (falling back to `github.com/.../releases/latest` if the API is blocked),
   at most once per 24 hours, carrying only a `User-Agent` and `Accept` header;
 - it can be disabled in **设置** or with `--no-update-check`;
 - the result (last check time, latest version) is stored locally in
