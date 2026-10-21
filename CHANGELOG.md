@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.1] - 2026-10-21
+
+### Fixed
+
+- Disk pack: known cache paths under `Program Files` were rejected by the path guard, so
+  Steam's unfinished downloads (`...\Steam\steamapps\downloading`) could be detected but not
+  cleaned. The guard now protects the system directories themselves (and one level below),
+  while allowing specific cache paths inside them.
+
 ## [2.2.0] - 2026-10-21
 
 ### Added

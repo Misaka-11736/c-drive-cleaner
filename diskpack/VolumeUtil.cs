@@ -152,10 +152,17 @@ namespace CCleaner.Disks
                 string low = p.ToLowerInvariant();
                 if (low == "system volume information") return false;
                 if (low == "$recycle.bin") return false;
-                if (low == "efi" || low == "boot" || low == "windows" ||
-                    low == "program files" || low == "program files (x86)" ||
-                    low == "programdata" || low == "recovery") return false;
             }
+
+            // 只保护卷根下的系统目录本身（及浅层），允许其下具体的缓存路径：
+            // D:\Program Files            -> 拒绝
+            // D:\Program Files\Steam      -> 拒绝
+            // D:\Program Files (x86)\Steam\steamapps\downloading -> 允许
+            string first = parts.Length > 0 ? parts[0].ToLowerInvariant() : "";
+            bool protectedRoot = first == "efi" || first == "boot" || first == "windows" ||
+                                 first == "program files" || first == "program files (x86)" ||
+                                 first == "programdata" || first == "recovery";
+            if (protectedRoot && parts.Length <= 2) return false;
 
             string last = System.IO.Path.GetFileName(n).ToLowerInvariant();
             if (last == "pagefile.sys" || last == "hiberfil.sys" || last == "swapfile.sys" ||
