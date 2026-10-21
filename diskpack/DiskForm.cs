@@ -336,7 +336,7 @@ namespace CCleaner.Disks
             _warning.Visible = v.IsBackup || v.IsExternal;
             if (v.IsBackup)
             {
-                _warning.Text = "  这是备份盘（检测到备份目录或卷标），已禁止一切删除操作，只能查看统计。";
+                _warning.Text = "  这是备份盘（检测到备份目录或卷标），只允许清空回收站，其余项目一律只读。";
                 _warning.Height = Theme.S(30);
             }
             else if (v.IsExternal)
@@ -485,7 +485,7 @@ namespace CCleaner.Disks
             _summary.Text = string.Format("总占用 {0} · 可清理 {1} · 仅报告 {2} · 已选 {3} 项 {4}",
                 Fmt.Size(r.TotalBytes), Fmt.Size(r.DeletableBytes()), Fmt.Size(r.ReportBytes()), n, Fmt.Size(sel));
 
-            _clean.Enabled = !_busy && n > 0 && _current != null && !_current.IsBackup;
+            _clean.Enabled = !_busy && n > 0 && _current != null;
         }
 
         private void CleanSelected()
@@ -573,7 +573,7 @@ namespace CCleaner.Disks
             _quick.Enabled = !busy && _current != null;
             _deep.Enabled = !busy && _current != null;
             _stop.Visible = busy;
-            _clean.Enabled = !busy && SelectedItems().Count > 0 && _current != null && !_current.IsBackup;
+            _clean.Enabled = !busy && SelectedItems().Count > 0 && _current != null;
             _volGrid.Enabled = !busy;
             _grid.Enabled = !busy;
             if (!busy) { _progress.Value = 0; UpdateButtons(); }

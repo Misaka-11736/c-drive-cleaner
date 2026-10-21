@@ -142,7 +142,8 @@ disks:
 - only safe items can be deleted — per-volume recycle bin, Steam `shadercache`,
   `downloading`, `temp`; games, downloads, media and documents are report-only;
 - backup drives (`WindowsImageBackup`, `FileHistory`, labels containing Backup/Passport)
-  are detected and locked read-only; network drives are not listed;
+  are detected; only their recycle bin can be emptied (typed `DELETE F`), everything else is
+  read-only. Network drives are not listed;
 - deleting requires typing `DELETE D` (your drive letter);
 - it never downloads anything and makes no network requests.
 

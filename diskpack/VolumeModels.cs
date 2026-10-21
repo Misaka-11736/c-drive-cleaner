@@ -87,6 +87,8 @@ namespace CCleaner.Disks
         public List<DupGroup> Duplicates = new List<DupGroup>();
         public List<string> Denied = new List<string>();
         public long DuplicateBytes;
+        public bool DuplicateCapped;
+        public int DuplicateCandidates;
         public bool Canceled;
 
         public long DeletableBytes()

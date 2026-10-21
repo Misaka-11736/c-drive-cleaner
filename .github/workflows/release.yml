@@ -22,6 +22,10 @@ jobs:
           "VERSION=$v" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "building version $v"
 
+      - name: Check PowerShell BOM
+        shell: pwsh
+        run: pwsh -NoProfile -ExecutionPolicy Bypass -File ./tools/check-bom.ps1
+
       - name: Build release assets
         shell: pwsh
         run: pwsh -NoProfile -ExecutionPolicy Bypass -File ./build-release.ps1 -Version $env:VERSION

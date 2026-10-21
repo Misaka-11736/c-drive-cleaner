@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -84,6 +85,37 @@ namespace CCleaner
             _result.TextAlign = ContentAlignment.MiddleLeft;
             Controls.Add(_result);
 
+            string module = FindModule();
+            string moduleText = "磁盘扩展包：未安装（可选）";
+            if (!string.IsNullOrEmpty(module))
+            {
+                string mv = "";
+                try { mv = FileVersionInfo.GetVersionInfo(module).FileVersion; } catch { }
+                moduleText = "磁盘扩展包：已安装" + (string.IsNullOrEmpty(mv) ? "" : " v" + mv);
+            }
+
+            Label modLabel = new Label();
+            modLabel.Text = moduleText;
+            modLabel.ForeColor = Theme.Muted;
+            modLabel.Font = Theme.F(8.5f);
+            modLabel.AutoSize = false;
+            modLabel.Location = new Point(Theme.S(28), Theme.S(232));
+            modLabel.Size = new Size(Theme.S(300), Theme.S(22));
+            modLabel.TextAlign = ContentAlignment.MiddleLeft;
+            Controls.Add(modLabel);
+
+            RoundButton modBtn = new RoundButton();
+            modBtn.Text = "打开下载页";
+            modBtn.Width = Theme.S(116);
+            modBtn.Height = Theme.S(30);
+            modBtn.Location = new Point(ClientSize.Width - Theme.S(28) - modBtn.Width, Theme.S(228));
+            modBtn.Click += delegate
+            {
+                try { Process.Start("https://github.com/Misaka-11736/c-drive-cleaner/releases/latest"); }
+                catch { }
+            };
+            Controls.Add(modBtn);
+
             RoundButton cancel = new RoundButton();
             cancel.Text = "取消";
             cancel.Width = Theme.S(84);
@@ -117,6 +149,21 @@ namespace CCleaner
             state.AutoCheck = _auto.Checked;
             UpdateStore.Save(_localAppData, state);
             Close();
+        }
+
+        private string FindModule()
+        {
+            string[] candidates = new string[]
+            {
+                Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "磁盘扩展包.exe"),
+                Path.Combine(_localAppData, "C盘清理助手", "dlc", "磁盘扩展包.exe")
+            };
+            foreach (string p in candidates)
+            {
+                try { if (File.Exists(p)) return p; }
+                catch { }
+            }
+            return null;
         }
 
         private void CheckNow()

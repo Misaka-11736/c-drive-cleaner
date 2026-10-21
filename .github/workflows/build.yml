@@ -16,6 +16,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check PowerShell BOM
+        shell: pwsh
+        run: pwsh -NoProfile -ExecutionPolicy Bypass -File ./tools/check-bom.ps1
+
       - name: Build release assets
         shell: pwsh
         run: pwsh -NoProfile -ExecutionPolicy Bypass -File ./build-release.ps1

@@ -35,8 +35,16 @@ namespace CCleaner.Disks
         public static void Validate(VolumeInfo v, List<VolumeItem> items)
         {
             if (v == null) throw new InvalidOperationException("未选择磁盘");
-            if (v.IsBackup) throw new InvalidOperationException("这是备份盘，已禁止删除操作。");
             if (items == null || items.Count == 0) throw new InvalidOperationException("没有选中任何项目。");
+
+            if (v.IsBackup)
+            {
+                foreach (VolumeItem item in items)
+                {
+                    if (item.Mode != VolumeItemMode.Recycle)
+                        throw new InvalidOperationException("备份盘只允许清空回收站：" + item.Label);
+                }
+            }
 
             foreach (VolumeItem item in items)
             {
@@ -50,7 +58,7 @@ namespace CCleaner.Disks
                 if (item.Mode == VolumeItemMode.Recycle)
                 {
                     string root = v.Root.TrimEnd('\\');
-                    string recycle = Path.Combine(root, "$Recycle.Bin").TrimEnd('\\');
+                    string recycle = Path.Combine(root + "\\", "$Recycle.Bin").TrimEnd('\\');
                     string p = item.Path.TrimEnd('\\');
                     if (!string.Equals(p, root, StringComparison.OrdinalIgnoreCase) &&
                         !string.Equals(p, recycle, StringComparison.OrdinalIgnoreCase))

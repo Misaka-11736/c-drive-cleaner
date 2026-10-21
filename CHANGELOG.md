@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.2.3] - 2026-10-21
+
+### Added
+
+- Backup drives: only the recycle bin is deletable (typed `DELETE F`); all other items stay
+  read-only.
+- Settings now shows the installed disk pack version and a **打开下载页** button.
+
+### Fixed
+
+- Duplicate scan raises the candidate cap to 8000 and reports when the cap is hit instead of
+  silently truncating.
+
+### Build
+
+- CI checks that PowerShell scripts containing non-ASCII text keep their UTF-8 BOM.
+
 ## [2.2.2] - 2026-10-21
 
 ### Fixed

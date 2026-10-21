@@ -12,7 +12,7 @@ namespace CCleaner.Disks
         private const long TopFileMin = 200L * 1024 * 1024;
         private const long DupMin = 50L * 1024 * 1024;
         private const long InstallerMin = 100L * 1024 * 1024;
-        private const int DupCandidateMax = 3000;
+        private const int DupCandidateMax = 8000;
 
         private class Watch
         {
@@ -326,6 +326,9 @@ namespace CCleaner.Disks
             }
             r.TopDirs.Sort(delegate(DirItem a, DirItem b) { return b.Bytes.CompareTo(a.Bytes); });
 
+            r.DuplicateCandidates = candidates.Count;
+            r.DuplicateCapped = candidates.Count >= DupCandidateMax;
+
             if (deep && !ct.IsCancellationRequested)
             {
                 r.TopFiles.Sort(delegate(FileItem a, FileItem b) { return b.Bytes.CompareTo(a.Bytes); });
@@ -468,11 +471,13 @@ namespace CCleaner.Disks
             item.Label = "回收站";
             item.Path = path;
             item.Mode = VolumeItemMode.Recycle;
-            item.Deletable = !v.IsBackup;
+            item.Deletable = true;
             item.Risk = RiskLevel.Low;
             item.Bytes = bytes;
             item.Files = files;
-            item.Note = v.IsBackup ? "备份盘：禁止删除" : "清空该盘回收站；其他用户的回收站需要管理员权限";
+            item.Note = v.IsBackup
+                ? "备份盘：只允许清空回收站，其他项目一律只读"
+                : "清空该盘回收站；其他用户的回收站需要管理员权限";
             r.Items.Add(item);
         }
 
@@ -537,6 +542,7 @@ namespace CCleaner.Disks
                 item.Bytes = r.DuplicateBytes;
                 item.Files = r.Duplicates.Count;
                 item.Note = "仅报告，不提供删除；重复内容可能被程序硬链接，删除前请自行确认";
+                if (r.DuplicateCapped) item.Note += "（候选文件达到上限 " + DupCandidateMax + "，结果可能不完整）";
                 r.Items.Add(item);
             }
 

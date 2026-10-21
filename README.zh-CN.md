@@ -127,8 +127,8 @@ powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 2.0.1
   （大文件、重复文件、超过 2 年未修改的大文件）；
 - 只有安全项能删——各盘回收站、Steam `shadercache` / `downloading` / `temp`，
   游戏、下载、媒体、文档一律只报告；
-- 自动识别备份盘（`WindowsImageBackup`、`FileHistory`、卷标含 Backup/Passport/备份）
-  并锁定为只读；网络盘不列出；
+- 自动识别备份盘（`WindowsImageBackup`、`FileHistory`、卷标含 Backup/Passport/备份），
+  只允许清空回收站（需输入 `DELETE F`），其余一律只读；网络盘不列出；
 - 删除需输入 `DELETE D`（对应盘符），输错不执行；
 - 不下载任何东西，也没有任何网络请求。
 
