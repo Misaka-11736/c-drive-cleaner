@@ -57,7 +57,7 @@ Remove-Item $stage2 -Recurse -Force -ErrorAction SilentlyContinue
 
 Write-Host '5/5 生成 SHA256...' -ForegroundColor Cyan
 $lines = @()
-foreach ($f in @($setupExe, $portableZip, $disksZip, $appExe, $packExe)) {
+foreach ($f in @($setupExe, $portableZip, $disksZip)) {
     $h = (Get-FileHash $f -Algorithm SHA256).Hash.ToLower()
     $lines += ($h + '  ' + (Split-Path $f -Leaf))
 }

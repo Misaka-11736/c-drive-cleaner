@@ -36,11 +36,28 @@ namespace CCleaner.Disks
         {
             if (v == null) throw new InvalidOperationException("未选择磁盘");
             if (v.IsBackup) throw new InvalidOperationException("这是备份盘，已禁止删除操作。");
+            if (items == null || items.Count == 0) throw new InvalidOperationException("没有选中任何项目。");
 
             foreach (VolumeItem item in items)
             {
-                if (item.Mode == VolumeItemMode.Recycle) continue;
-                if (!item.Deletable) continue;
+                if (!item.Deletable)
+                    throw new InvalidOperationException("包含仅报告项，已中止：" + item.Label);
+                if (item.Mode == VolumeItemMode.Report)
+                    throw new InvalidOperationException("仅报告项不能删除：" + item.Label);
+                if (string.IsNullOrEmpty(item.Path))
+                    throw new InvalidOperationException("项目缺少路径：" + item.Label);
+
+                if (item.Mode == VolumeItemMode.Recycle)
+                {
+                    string root = v.Root.TrimEnd('\\');
+                    string recycle = Path.Combine(root, "$Recycle.Bin").TrimEnd('\\');
+                    string p = item.Path.TrimEnd('\\');
+                    if (!string.Equals(p, root, StringComparison.OrdinalIgnoreCase) &&
+                        !string.Equals(p, recycle, StringComparison.OrdinalIgnoreCase))
+                        throw new InvalidOperationException("回收站项目路径异常：" + item.Path);
+                    continue;
+                }
+
                 if (!VolumeUtil.IsSafeVolumePath(item.Path, v))
                     throw new InvalidOperationException("路径未通过安全校验：" + item.Path);
             }

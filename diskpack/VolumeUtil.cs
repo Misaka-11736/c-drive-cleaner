@@ -154,15 +154,22 @@ namespace CCleaner.Disks
                 if (low == "$recycle.bin") return false;
             }
 
-            // 只保护卷根下的系统目录本身（及浅层），允许其下具体的缓存路径：
-            // D:\Program Files            -> 拒绝
-            // D:\Program Files\Steam      -> 拒绝
-            // D:\Program Files (x86)\Steam\steamapps\downloading -> 允许
+            // 只保护卷根下的系统目录本身（及浅层），且在其下只放行已知缓存目录：
+            // D:\Program Files                                    -> 拒绝
+            // D:\Program Files\Steam                              -> 拒绝
+            // D:\Program Files\Netease\MuMu                       -> 拒绝
+            // D:\Program Files (x86)\Steam\steamapps\downloading  -> 允许
             string first = parts.Length > 0 ? parts[0].ToLowerInvariant() : "";
             bool protectedRoot = first == "efi" || first == "boot" || first == "windows" ||
                                  first == "program files" || first == "program files (x86)" ||
                                  first == "programdata" || first == "recovery";
-            if (protectedRoot && parts.Length <= 2) return false;
+            if (protectedRoot)
+            {
+                if (parts.Length <= 2) return false;
+                string lastSeg = parts[parts.Length - 1].ToLowerInvariant();
+                if (lastSeg != "downloading" && lastSeg != "shadercache" && lastSeg != "temp")
+                    return false;
+            }
 
             string last = System.IO.Path.GetFileName(n).ToLowerInvariant();
             if (last == "pagefile.sys" || last == "hiberfil.sys" || last == "swapfile.sys" ||

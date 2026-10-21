@@ -375,6 +375,12 @@ namespace CCleaner.Disks
             }
         }
 
+        private void RunOnUi(Action a)
+        {
+            if (IsDisposed || !IsHandleCreated) return;
+            try { BeginInvoke(a); } catch { }
+        }
+
         private void StartScan(bool deep)
         {
             if (_busy || _current == null) return;
@@ -405,7 +411,7 @@ namespace CCleaner.Disks
                 try
                 {
                     VolumeScanResult r = new VolumeScanner().Scan(vol, isDeep, progress, token);
-                    BeginInvoke(new Action(delegate()
+                    RunOnUi(new Action(delegate()
                     {
                         timer.Stop();
                         timer.Dispose();
@@ -417,7 +423,7 @@ namespace CCleaner.Disks
                 }
                 catch (Exception ex)
                 {
-                    BeginInvoke(new Action(delegate()
+                    RunOnUi(new Action(delegate()
                     {
                         timer.Stop();
                         timer.Dispose();
@@ -491,6 +497,18 @@ namespace CCleaner.Disks
             long bytes = 0;
             foreach (VolumeItem i in items) bytes += i.Bytes;
 
+            bool hasSteam = false;
+            foreach (VolumeItem i in items)
+                if (i.Id.StartsWith("STEAM-", StringComparison.Ordinal)) hasSteam = true;
+            if (hasSteam && Process.GetProcessesByName("steam").Length > 0)
+            {
+                DialogResult sr = MessageBox.Show(this,
+                    "Steam 正在运行。清理未完成下载或着色器缓存前，建议先退出 Steam，\r\n" +
+                    "否则文件可能被占用，或清理后又被重新生成。\r\n\r\n仍要继续吗？",
+                    "Steam 正在运行", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (sr != DialogResult.Yes) return;
+            }
+
             using (VolumeConfirmDialog dlg = new VolumeConfirmDialog(_current, items, bytes))
             {
                 if (dlg.ShowDialog(this) != DialogResult.OK) return;
@@ -515,7 +533,7 @@ namespace CCleaner.Disks
                 {
                     VolumeCleanResult res = VolumeCleaner.Clean(vol, items, progress, token,
                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "C盘清理助手"));
-                    BeginInvoke(new Action(delegate()
+                    RunOnUi(new Action(delegate()
                     {
                         SetBusy(false);
                         vol.Free = new DriveInfo(vol.Root).AvailableFreeSpace;
@@ -538,7 +556,7 @@ namespace CCleaner.Disks
                 }
                 catch (Exception ex)
                 {
-                    BeginInvoke(new Action(delegate()
+                    RunOnUi(new Action(delegate()
                     {
                         SetBusy(false);
                         MessageBox.Show(this, "清理失败：" + ex.Message, "磁盘扩展包", MessageBoxButtons.OK, MessageBoxIcon.Error);

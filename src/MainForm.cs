@@ -148,6 +148,21 @@ namespace CCleaner
             string module = FindDiskPack();
             if (module != null)
             {
+                string moduleVersion = "";
+                try { moduleVersion = FileVersionInfo.GetVersionInfo(module).FileVersion; }
+                catch { }
+
+                if (!string.IsNullOrEmpty(moduleVersion) &&
+                    !moduleVersion.StartsWith(VersionInfo.Version, StringComparison.Ordinal))
+                {
+                    DialogResult vr = MessageBox.Show(this,
+                        "磁盘扩展包版本（" + moduleVersion + "）与主程序（" + VersionInfo.Version + "）不一致。\r\n" +
+                        "旧版模块可能缺少最新的安全修复，建议从 Releases 重新下载 disks.zip。\r\n\r\n" +
+                        "仍要启动吗？",
+                        "版本不一致", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (vr != DialogResult.Yes) return;
+                }
+
                 try
                 {
                     Process.Start(module);

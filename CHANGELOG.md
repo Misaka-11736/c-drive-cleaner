@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.2.2] - 2026-10-21
+
+### Fixed
+
+- Disk pack cleaner now rejects report-only or non-deletable items at the API level, even if a
+  caller passes them by mistake.
+- The path guard under `Program Files` now only allows known cache folders
+  (`downloading`, `shadercache`, `temp`), so a crafted path cannot target an installed app.
+- `SHA256SUMS.txt` now covers only the files actually attached to the release.
+
+### Added
+
+- Main app warns when the installed disk pack version differs from the app version.
+- Disk pack warns when Steam is running before cleaning Steam caches.
+
 ## [2.2.1] - 2026-10-21
 
 ### Fixed
