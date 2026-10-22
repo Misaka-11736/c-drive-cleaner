@@ -42,6 +42,16 @@ namespace CCleaner.Disks
 
             try
             {
+                if (Has(args, "--dedupe"))
+                {
+                    string rootsArg = GetArg(args, "--dedupe-roots=");
+                    string[] roots = string.IsNullOrEmpty(rootsArg) ? null : rootsArg.Split(new char[] { ';' });
+                    DedupeForm df = new DedupeForm(roots);
+                    if (Has(args, "--dedupe-auto")) df.AutoStart();
+                    Application.Run(df);
+                    return;
+                }
+
                 DiskForm form = new DiskForm();
                 string scan = GetArg(args, "--scan=");
                 if (!string.IsNullOrEmpty(scan))

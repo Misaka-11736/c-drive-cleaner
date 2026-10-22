@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.3.0] - 2026-10-22
+
+### Added
+
+- Disk pack **全盘查重**: scans `C:\Users` plus D/E/F for byte-identical files ≥1 MB,
+  including **same-volume and cross-volume** duplicates.
+  - Hardlink-aware: paths sharing one file ID are grouped separately and count as **0**
+    reclaimable space.
+  - Report-only, sorted by reclaimable space, with a suggested copy to keep.
+  - CSV export (`dedupe-groups.csv`, `dedupe-files.csv`).
+  - Cancellable; about 10 minutes for 2.7M files / 1.6 TB in local testing.
+
 ## [2.2.3] - 2026-10-21
 
 ### Added

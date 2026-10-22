@@ -139,6 +139,8 @@ disks:
 - internal data partitions (D:/E:), USB hard drives, USB sticks, SD cards;
 - **quick scan** (sizes, recycle bin, Steam caches, downloads) or **deep scan**
   (largest files, duplicates, old large files);
+- **all-volume dedupe** (全盘查重): byte-identical files ≥1 MB across `C:\Users`, D/E/F —
+  same-volume and cross-volume, hardlink-aware, report-only with CSV export;
 - only safe items can be deleted — per-volume recycle bin, Steam `shadercache`,
   `downloading`, `temp`; games, downloads, media and documents are report-only;
 - backup drives (`WindowsImageBackup`, `FileHistory`, labels containing Backup/Passport)

@@ -28,6 +28,7 @@ namespace CCleaner.Disks
         private RoundButton _deep;
         private RoundButton _stop;
         private RoundButton _clean;
+        private RoundButton _dedupe;
         private SlimProgress _progress;
 
         private CancellationTokenSource _cts;
@@ -136,6 +137,15 @@ namespace CCleaner.Disks
             _clean.Width = Theme.S(110);
             _clean.Click += delegate { CleanSelected(); };
             toolbar.Controls.Add(_clean);
+
+            _dedupe = SmallButton("全盘查重", false);
+            _dedupe.Width = Theme.S(100);
+            _dedupe.Click += delegate
+            {
+                using (DedupeForm f = new DedupeForm())
+                    f.ShowDialog(this);
+            };
+            toolbar.Controls.Add(_dedupe);
 
             _stop = SmallButton("停止", false);
             _stop.Width = Theme.S(64);
@@ -289,6 +299,8 @@ namespace CCleaner.Disks
             right -= _clean.Width + Theme.S(8);
             _deep.Location = new Point(right - _deep.Width, y);
             right -= _deep.Width + Theme.S(8);
+            _dedupe.Location = new Point(right - _dedupe.Width, y);
+            right -= _dedupe.Width + Theme.S(8);
             _quick.Location = new Point(right - _quick.Width, y);
             right -= _quick.Width + Theme.S(8);
             _stop.Location = new Point(right - _stop.Width, y);

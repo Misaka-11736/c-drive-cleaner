@@ -125,6 +125,8 @@ powershell -ExecutionPolicy Bypass -File .\build-release.ps1 -Version 2.0.1
 - 内置数据分区（D:/E:）、USB 移动硬盘、U 盘、SD 卡；
 - **快速扫描**（体积、回收站、Steam 缓存、下载目录）或**深度扫描**
   （大文件、重复文件、超过 2 年未修改的大文件）；
+- **全盘查重**：扫描 `C:\Users` 与 D/E/F，找出 ≥1 MB 的字节级重复，
+  同盘与跨盘都报，硬链接单独识别，只报告并可导出 CSV；
 - 只有安全项能删——各盘回收站、Steam `shadercache` / `downloading` / `temp`，
   游戏、下载、媒体、文档一律只报告；
 - 自动识别备份盘（`WindowsImageBackup`、`FileHistory`、卷标含 Backup/Passport/备份），
